@@ -14,6 +14,6 @@
     postgresql_hba_entries_additional:
       - {type: host, database: corpus, user: corpus, address: all, auth_method: "{{ postgresql_auth_method }}"}
   tasks:
-    - name: "Include ahu.postgresql"
+    - name: Include ahu.postgresql
       ansible.builtin.include_role:
-        name: "ahu.postgresql"
+        name: ahu.postgresql

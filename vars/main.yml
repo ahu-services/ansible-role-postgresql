@@ -7,7 +7,7 @@ postgresql_bin_path: "/usr/pgsql-{{ postgresql_version }}/bin"
 postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version }}/data"
 postgresql_daemon: "postgresql-{{ postgresql_version }}"
 postgresql_python_library: python3-psycopg2
-postgresql_packages: 
+postgresql_packages:
   - "postgresql{{ postgresql_version }}-server-{{ postgresql_version_full }}"
   - "{{ postgresql_python_library }}"
   - glibc-langpack-en

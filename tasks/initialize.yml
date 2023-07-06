@@ -10,6 +10,8 @@
   ansible.builtin.command: "{{ postgresql_bin_path }}/postgresql-{{ postgresql_version }}-setup initdb"
   become: true
   when: not pgdata_dir_version.stat.exists
+  register: pgsql_setup
+  changed_when: pgsql_setup.rc == 0
   # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
   vars:
     ansible_ssh_pipelining: true

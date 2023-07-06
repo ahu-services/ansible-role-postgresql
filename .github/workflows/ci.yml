@@ -1,0 +1,38 @@
+---
+name: CI
+on:
+  - pull_request
+  - push
+
+jobs:
+  lint:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: ansible-lint
+        uses: ansible-community/ansible-lint-action@main
+  test:
+    needs:
+      - lint
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        config:
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 9
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 8
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          path: "${{ github.repository }}"
+      - name: molecule
+        uses: robertdebock/molecule-action@5.0.2
+        with:
+          image: ${{ matrix.config.image }}
+          tag: ${{ matrix.config.tag }}
+          namespace: ${{ matrix.config.namespace }}

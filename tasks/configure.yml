@@ -8,7 +8,7 @@
     dest: "{{ postgresql_config_path }}/pg_hba.conf"
     owner: "{{ postgresql_user }}"
     group: "{{ postgresql_group }}"
-    mode: 0600
+    mode: "0600"
   become: true
   notify: Restart postgresql
   when: postgresql_hba_entries | length > 0

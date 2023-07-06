@@ -1,6 +1,6 @@
 ---
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
-postgresql_auth_method: "{{ ansible_fips  | ternary('scram-sha-256', 'md5') }}"
+postgresql_auth_method: "{{ ansible_fips | ternary('scram-sha-256', 'md5') }}"
 
 # Host based authentication (hba) entries to be added to the pg_hba.conf. This
 # variable's defaults reflect the defaults that come with a fresh installation.
