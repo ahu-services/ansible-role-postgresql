@@ -1,0 +1,7 @@
+---
+# handlers file for oracle-to-pgsql
+- name: Restart postgresql
+  ansible.builtin.systemd:
+    name: "{{ postgresql_daemon }}"
+    state: restarted
+  become: true

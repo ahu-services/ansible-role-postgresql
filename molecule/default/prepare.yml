@@ -1,0 +1,20 @@
+---
+- name: Prepare
+  hosts: all
+  remote_user: root
+  gather_facts: false
+  tasks:
+    - name: Install required packages
+      ansible.builtin.dnf:
+        name: sudo
+    - name: Create sudo user
+      ansible.builtin.user:
+        name: asudo
+        group: wheel
+    - name: Allow 'wheel' group to have passwordless sudo
+      ansible.builtin.lineinfile:
+        dest: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: 'visudo -cf %s'

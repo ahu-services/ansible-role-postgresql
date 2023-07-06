@@ -1,0 +1,26 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: postgres-rl8
+    image: eniocarboni/docker-rockylinux-systemd:8
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    cgroupns: host
+    privileged: true    
+    pre_build_image: true
+    command: /usr/sbin/init
+  - name: postgres-rl9
+    image: eniocarboni/docker-rockylinux-systemd:9
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    cgroupns: host
+    privileged: true    
+    pre_build_image: true
+    command: /usr/sbin/init    
+provisioner:
+  name: ansible
+verifier:
+  name: ansible

@@ -1,0 +1,19 @@
+---
+- name: Converge
+  hosts: all
+  remote_user: asudo
+  gather_facts: true
+  vars:
+    postgresql_databases:
+      - name: corpus # required; the rest are optional
+        owner: corpus
+    postgresql_users:
+      - name: corpus # required; the rest are optional
+        password: corpus
+        db: corpus
+    postgresql_hba_entries_additional:
+      - {type: host, database: corpus, user: corpus, address: all, auth_method: "{{ postgresql_auth_method }}"}
+  tasks:
+    - name: "Include ahu.postgresql"
+      ansible.builtin.include_role:
+        name: "ahu.postgresql"

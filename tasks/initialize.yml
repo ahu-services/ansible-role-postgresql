@@ -1,0 +1,15 @@
+---
+- name: Check if PostgreSQL database is initialized.
+  ansible.builtin.stat:
+    path: "{{ postgresql_data_dir }}/PG_VERSION"
+  become: true
+  become_user: "{{ postgresql_user }}"
+  register: pgdata_dir_version
+
+- name: Initialize PostgreSQL database.
+  ansible.builtin.command: "{{ postgresql_bin_path }}/postgresql-{{ postgresql_version }}-setup initdb"
+  become: true
+  when: not pgdata_dir_version.stat.exists
+  # See: https://github.com/ansible/ansible/issues/16048#issuecomment-229012509
+  vars:
+    ansible_ssh_pipelining: true

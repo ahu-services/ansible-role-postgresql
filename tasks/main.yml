@@ -1,0 +1,21 @@
+---
+# tasks file for postgresql
+- ansible.builtin.include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- ansible.builtin.include_tasks: initialize.yml
+- ansible.builtin.include_tasks: configure.yml
+
+- name: Start and enable PostgreSQL-Server
+  ansible.builtin.systemd:
+    name: "{{ postgresql_daemon }}"
+    daemon_reload: true
+    state: started
+    enabled: true
+  become: true
+
+# Configure PostgreSQL.
+- ansible.builtin.import_tasks: users.yml
+- ansible.builtin.import_tasks: databases.yml
+- ansible.builtin.import_tasks: users_props.yml
+

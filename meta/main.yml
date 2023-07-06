@@ -1,0 +1,17 @@
+galaxy_info:
+  author: Andreas Hubert
+  namespace: ahu
+  description: PostgreSQL Server for Linux, using packages from postgresql.org
+  company: Andreas Hubert
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+  - name: EL
+    versions:
+    - "8"
+    - "9"
+  galaxy_tags:
+    - database
+    - postgres
+    - postgresql
+    - rdbms
