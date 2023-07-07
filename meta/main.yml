@@ -1,7 +1,7 @@
 galaxy_info:
   role_name: postgresql
   author: Andreas Hubert
-  namespace: ahu
+  namespace: peshay
   description: PostgreSQL Server for Linux, using packages from postgresql.org
   company: Andreas Hubert
   license: MIT
