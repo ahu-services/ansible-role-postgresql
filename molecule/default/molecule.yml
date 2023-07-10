@@ -4,8 +4,8 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}${TOX_ENVNAME}"
-    image: "${namespace:-eniocarboni}/${image:-docker-rockylinux-systemd}:${tag:-9}"
+  - name: "postgres-${image:-docker-rockylinux9-ansible}${TOX_ENVNAME}"
+    image: "${namespace:-geerlingguy}/${image:-docker-rockylinux9-ansible}"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
     cgroupns: host

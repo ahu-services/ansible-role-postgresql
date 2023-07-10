@@ -19,12 +19,22 @@ jobs:
     strategy:
       matrix:
         config:
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+          - image: docker-centos8-ansible
+            namespace: geerlingguy
+          - image: docker-amazonlinux2-ansible
+            namespace: geerlingguy
+          - image: docker-amazonlinux2023-ansible
+            namespace: geerlingguy
+          - image: docker-fedora36-ansible
+            namespace: geerlingguy
+          - image: docker-fedora37-ansible
+            namespace: geerlingguy
+          - image: docker-fedora38-ansible
+            namespace: geerlingguy
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -34,5 +44,4 @@ jobs:
         uses: robertdebock/molecule-action@5.0.2
         with:
           image: ${{ matrix.config.image }}
-          tag: ${{ matrix.config.tag }}
           namespace: ${{ matrix.config.namespace }}
