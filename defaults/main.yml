@@ -1,4 +1,7 @@
 ---
+postgresql_version: "15"
+postgresql_version_full: "15.3"
+
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
 postgresql_auth_method: "{{ ansible_fips | ternary('scram-sha-256', 'md5') }}"
 
