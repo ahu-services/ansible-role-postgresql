@@ -27,11 +27,7 @@ jobs:
             namespace: geerlingguy
           - image: docker-amazonlinux2023-ansible
             namespace: geerlingguy
-          - image: docker-fedora36-ansible
-            namespace: geerlingguy
-          - image: docker-fedora37-ansible
-            namespace: geerlingguy
-          - image: docker-fedora38-ansible
+          - image: docker-ubi8-ansible
             namespace: geerlingguy
     steps:
       - name: checkout
