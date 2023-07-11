@@ -25,8 +25,6 @@ jobs:
             namespace: geerlingguy
           - image: docker-centos8-ansible
             namespace: geerlingguy
-          - image: docker-amazonlinux2023-ansible
-            namespace: geerlingguy
           - image: docker-ubi8-ansible
             namespace: geerlingguy
     steps:
