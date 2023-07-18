@@ -1,6 +1,6 @@
 ---
 name: CI
-on:
+on: # yamllint disable-line rule:truthy
   - pull_request
   - push
 
@@ -22,9 +22,19 @@ jobs:
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 9
+            version: "15.3"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 8
+            version: "15.3"
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 9
+            version: "14.8"
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 8
+            version: "14.8"
     steps:
       - name: checkout
         uses: actions/checkout@v3
@@ -36,3 +46,4 @@ jobs:
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
           namespace: ${{ matrix.config.namespace }}
+          psqlversion: ${{ matrix.config.version }}

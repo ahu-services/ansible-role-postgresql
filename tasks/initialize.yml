@@ -7,7 +7,7 @@
   register: pgdata_dir_version
 
 - name: Initialize PostgreSQL database.
-  ansible.builtin.command: "{{ postgresql_bin_path }}/postgresql-{{ postgresql_version }}-setup initdb"
+  ansible.builtin.command: "{{ postgresql_bin_path }}/postgresql-{{ postgresql_version_major }}-setup initdb"
   become: true
   when: not pgdata_dir_version.stat.exists
   register: pgsql_setup

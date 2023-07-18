@@ -1,7 +1,4 @@
 ---
-- name: Put all HBA entries togehter
-  ansible.builtin.set_fact:
-    postgresql_hba_entries: "{{ postgresql_hba_entries_default + postgresql_hba_entries_additional }}"
 - name: Configure host based authentication (if entries are configured).
   ansible.builtin.template:
     src: "pg_hba.conf.j2"

@@ -1,11 +1,28 @@
 ---
+# PostgreSQL Version and dependent paths
+postgresql_version: "15.3"
+postgresql_version_major: "{{ postgresql_version | split('.') | first }}"
+postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
+postgresql_bin_path: "/usr/pgsql-{{ postgresql_version_major }}/bin"
+postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
+postgresql_daemon: "postgresql-{{ postgresql_version_major }}"
+postgresql_python_library: python3-psycopg2
+postgresql_packages:
+  - "postgresql{{ postgresql_version_major }}-server-{{ postgresql_version }}"
+  - "{{ postgresql_python_library }}"
+  - glibc-langpack-en
+
+
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
 postgresql_auth_method: "{{ ansible_fips | ternary('scram-sha-256', 'md5') }}"
 
 # Host based authentication (hba) entries to be added to the pg_hba.conf. This
 # variable's defaults reflect the defaults that come with a fresh installation.
-postgresql_hba_entries: []
-postgresql_hba_entries_additional: []
+postgresql_hba_entries:
+  - {type: local, database: all, user: postgres, auth_method: trust}
+  - {type: local, database: all, user: all, auth_method: "{{ postgresql_auth_method }}"}
+  - {type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: "{{ postgresql_auth_method }}"}
+  - {type: host, database: all, user: all, address: '::1/128', auth_method: "{{ postgresql_auth_method }}"}
 
 # Databases to ensure exist.
 postgresql_databases: []

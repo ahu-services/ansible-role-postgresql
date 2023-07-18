@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}${TOX_ENVNAME}"
+  - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}-${psqlversion:-15.3}"
     image: "${namespace:-eniocarboni}/${image:-docker-rockylinux-systemd}:${tag:-9}"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
@@ -14,5 +14,9 @@ platforms:
     command: /usr/sbin/init
 provisioner:
   name: ansible
+  inventory:
+    group_vars:
+      all:
+        postgresql_version: "${psqlversion:-15.3}"
 verifier:
   name: ansible
