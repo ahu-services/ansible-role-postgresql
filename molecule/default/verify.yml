@@ -5,13 +5,13 @@
   gather_facts: false
   tasks:
     - name: Get desired version installed from environment
-      set_fact:
+      ansible.builtin.set_fact:
         psql_version: "{{ lookup('ansible.builtin.env', 'psqlversion', default='15.3') }}"
     - name: Set major version variables accordingly
-      set_fact:
-        psql_version_major:  "{{ psql_version | split('.') | first }}"
+      ansible.builtin.set_fact:
+        psql_version_major: "{{ psql_version | split('.') | first }}"
     - name: Set server name accordingly
-      set_fact:        
+      ansible.builtin.set_fact:
         psql_server_name: "postgresql{{ psql_version_major }}"
     - name: Gather the package facts
       ansible.builtin.package_facts:
