@@ -4,27 +4,36 @@
   hosts: all
   gather_facts: false
   tasks:
+    - name: Get desired version installed from environment
+      set_fact:
+        psql_version: "{{ lookup('ansible.builtin.env', 'psqlversion', default='15.3') }}"
+    - name: Set major version variables accordingly
+      set_fact:
+        psql_version_major:  "{{ psql_version | split('.') | first }}"
+    - name: Set server name accordingly
+      set_fact:        
+        psql_server_name: "postgresql{{ psql_version_major }}"
     - name: Gather the package facts
       ansible.builtin.package_facts:
         manager: auto
     - name: Check PostgreSQL packages are installed
       ansible.builtin.assert:
         that:
-          - ansible_facts.packages['postgresql15'][0].version == '15.3'
-          - ansible_facts.packages['postgresql15-server'][0].version == '15.3'
+          - ansible_facts.packages[psql_server_name][0].version == psql_version
+          - ansible_facts.packages[psql_server_name + "-server"][0].version == psql_version
     - name: Check if PostgreSQL database is initialized
       ansible.builtin.stat:
-        path: "/var/lib/pgsql/15/data/PG_VERSION"
+        path: "/var/lib/pgsql/{{ psql_version_major }}/data/PG_VERSION"
       register: pgdata_dir_version
-    - name: Check postgresql-15 DB was initialized
+    - name: Check postgresql DB was initialized
       ansible.builtin.assert:
         that: pgdata_dir_version.stat.exists
     - name: Collect facts about system services
       ansible.builtin.service_facts:
       register: services_state
-    - name: Check postgresql-15 is running
+    - name: Check postgresql is running
       ansible.builtin.assert:
-        that: services_state.ansible_facts.services['postgresql-15.service'].state == 'running'
+        that: services_state.ansible_facts.services['postgresql-' + psql_version_major + '.service'].state == 'running'
     - name: Gather info about PostgreSQL users and databases
       become: true
       become_user: postgres
@@ -46,4 +55,4 @@
     - name: Check version for PostgreSQL
       ansible.builtin.assert:
         that:
-          - postgres_info.version.full == "15.3"
+          - postgres_info.version.full == "{{ psql_version }}"
