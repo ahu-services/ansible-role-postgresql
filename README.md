@@ -31,7 +31,11 @@ Including an example of how to use your role (for instance, with variables passe
           - name: barfoo # required; the rest are optional
             password: secret
             db: foobar
-        postgresql_hba_entries_additional:
+        postgresql_hba_entries:
+          - {type: local, database: all, user: postgres, auth_method: trust}
+          - {type: local, database: all, user: all, auth_method: "{{ postgresql_auth_method }}"}
+          - {type: host, database: all, user: all, address: '127.0.0.1/32', auth_method: "{{ postgresql_auth_method }}"}
+          - {type: host, database: all, user: all, address: '::1/128', auth_method: "{{ postgresql_auth_method }}"}        
           - {type: host, database: foobar, user: barfoo, address: all, auth_method: "{{ postgresql_auth_method }}"}
       tasks:
         - name: Setup PostgreSQL Server
