@@ -20,7 +20,7 @@ Following OS and PostgreSQL versions have been verified:
 |Rocky Linux|9|15.3|:white_check_mark:|
 
 
-Dependencies
+Dependenciess
 ------------
 
 collections:
