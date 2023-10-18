@@ -14,5 +14,5 @@
 
 - name: Install PostgreSQL Server
   ansible.builtin.dnf:
-    name: "{{ postgresql_packages }}"
+    name: "{{ postgresql_packages_el }}"
   become: true

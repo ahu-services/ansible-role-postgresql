@@ -3,12 +3,14 @@
   ansible.builtin.stat:
     path: "{{ postgresql_data_dir }}/PG_VERSION"
   become: true
-  become_user: "{{ postgresql_user }}"
   register: pgdata_dir_version
 
 - name: Initialize PostgreSQL database.
-  ansible.builtin.command: "{{ postgresql_bin_path }}/postgresql-{{ postgresql_version_major }}-setup initdb"
+  ansible.builtin.command: "{{ postgresql_initdb_cmd }}"
+  environment:
+    PGDATA: "{{ postgresql_data_dir }}"
   become: true
+  become_user: "{{ postgresql_user }}"
   when: not pgdata_dir_version.stat.exists
   register: pgsql_setup
   changed_when: pgsql_setup.rc == 0
