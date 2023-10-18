@@ -3,22 +3,26 @@ Ansible Role: PostgreSQL
 
 [![CI](https://github.com/ahu-services/ansible-role-postgresql/workflows/CI/badge.svg?event=push)](https://github.com/ahu-services/ansible-role-postgresql/actions?query=workflow%3ACI)
 
-Installs and configures PostgtreSQL Server 15 on RockyLinux servers.
+Installs and configures PostgtreSQL Server from official postgresql.org packages.
 
 Role Variables
 --------------
 
 This role uses the original sources from postgresql.org instead of the OS source to install PostgreSQL Server versions.
-The setup is only tested on RockyLinux 8 and 9, but should also work on any other EL8/9 as well with other PostgreSQL Server version. 
+The setup is only tested on RockyLinux 8, 9 and OpenSuse 15.4, but should also work on any other EL8/9/SuSE15 as well with other PostgreSQL Server version. 
 Following OS and PostgreSQL versions have been verified:
 
 |OS|OS Version|PostgreSQL Version|Status|
 |--|---------:|-----------------:|:------:|
-|Rocky Linux|8|14.8|:white_check_mark:|
-|Rocky Linux|9|14.8|:white_check_mark:|
-|Rocky Linux|8|15.3|:white_check_mark:|
-|Rocky Linux|9|15.3|:white_check_mark:|
-
+|Rocky Linux|8|14.9|:white_check_mark:|
+|Rocky Linux|9|14.9|:white_check_mark:|
+|OpenSuSE|15.4|14.9|:white_check_mark:|
+|Rocky Linux|8|15.4|:white_check_mark:|
+|Rocky Linux|9|15.4|:white_check_mark:|
+|OpenSuSE|15.4|15.4|:white_check_mark:|
+|Rocky Linux|8|16.0|:white_check_mark:|
+|Rocky Linux|9|16.0|:white_check_mark:|
+|OpenSuSE|15.4|16.0|:white_check_mark:|
 
 Dependencies
 ------------
@@ -33,7 +37,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: database
       vars:
-        postgresql_version: 14.8
+        postgresql_version: 14.9
         postgresql_databases:
           - name: foobar # required; the rest are optional
             owner: barfoo

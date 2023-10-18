@@ -22,19 +22,39 @@ jobs:
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 9
-            version: "15.3"
+            version: "15.4"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 8
-            version: "15.3"
+            version: "15.4"
+          - image: opensuse
+            namespace: robertdebock
+            tag: latest
+            version: "15.4"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 9
-            version: "14.8"
+            version: "14.9"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 8
-            version: "14.8"
+            version: "14.9"
+          - image: opensuse
+            namespace: robertdebock
+            tag: latest
+            version: "14.9"
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 9
+            version: "16.0"
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 8
+            version: "16.0"
+          - image: opensuse
+            namespace: robertdebock
+            tag: latest
+            version: "16.0"
     steps:
       - name: checkout
         uses: actions/checkout@v3
