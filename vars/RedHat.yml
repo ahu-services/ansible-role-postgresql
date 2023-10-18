@@ -1,0 +1,7 @@
+---
+# vars file for postgresql in RedHat
+postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
+postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
+postgresql_bin_path: "/usr/pgsql-{{ postgresql_version_major }}/bin"
+postgresql_initdb_cmd: "{{ postgresql_bin_path }}/postgresql-{{ postgresql_version_major }}-setup initdb"
+postgresql_daemon: "postgresql-{{ postgresql_version_major }}"

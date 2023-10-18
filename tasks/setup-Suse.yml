@@ -1,0 +1,25 @@
+---
+- name: Set Repo URL
+  ansible.builtin.set_fact:
+    repo_url: "https://download.postgresql.org/pub/repos/zypp/repo/pgdg-sles-{{ ansible_facts.distribution_major_version }}-pg{{ postgresql_version_major }}"
+
+- name: Check if PostgreSQL repository is already added
+  ansible.builtin.command:
+    cmd: "zypper lr --url | grep {{ repo_url }}"
+  register: repo_check
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  become: true
+
+- name: Add PostgreSQL Repositories
+  ansible.builtin.command:
+    cmd: "zypper addrepo {{ repo_url }}.repo"
+  changed_when: "'Adding repository' in repo_result.stdout"
+  when: repo_check.stdout == ""
+  become: true
+
+- name: Install PostgreSQL Server
+  community.general.zypper:
+    name: "{{ postgresql_packages_suse }}"
+  become: true

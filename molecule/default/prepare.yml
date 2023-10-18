@@ -1,12 +1,39 @@
 ---
-- name: Prepare
+- name: Check for OpenSuSE
   hosts: all
   remote_user: root
   gather_facts: false
   tasks:
-    - name: Install required packages
+    - name: Check OS
+      ansible.builtin.raw: cat /etc/os-release
+      register: os_result
+      changed_when: false
+
+    - name: Install Python (if OpenSuSE)
+      ansible.builtin.raw: zypper install -n python3 python3-rpm
+      register: zypper_result
+      changed_when: "'Installing:' in zypper_result.stdout or 'Upgrading:' in zypper_result.stdout"
+      when: "'ID_LIKE=\"suse opensuse\"' in os_result.stdout"
+
+- name: Prepare
+  hosts: all
+  remote_user: root
+  gather_facts: true
+  tasks:
+    - name: Prepare SuSE
+      when: ansible_os_family == 'Suse'
+      block:
+        - name: Install required packages SuSE
+          community.general.zypper:
+            name: sudo
+        - name: Ensure wheel group is present (SuSE)
+          ansible.builtin.group:
+            name: wheel
+            state: present
+    - name: Install required packages RedHat
       ansible.builtin.dnf:
         name: sudo
+      when: ansible_os_family == 'RedHat'
     - name: Create sudo user
       ansible.builtin.user:
         name: asudo

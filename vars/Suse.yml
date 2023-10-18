@@ -1,0 +1,7 @@
+---
+# vars file for postgresql in Suse
+postgresql_data_dir: "/var/lib/pgsql/data"
+postgresql_config_path: "/var/lib/pgsql/data"
+postgresql_bin_path: "/usr/bin"
+postgresql_initdb_cmd: "{{ postgresql_bin_path }}/initdb"
+postgresql_daemon: "postgresql"

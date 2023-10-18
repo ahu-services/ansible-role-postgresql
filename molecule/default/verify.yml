@@ -2,11 +2,11 @@
 # This is an example playbook to execute Ansible tests.
 - name: Verify
   hosts: all
-  gather_facts: false
+  gather_facts: true
   tasks:
     - name: Get desired version installed from environment
       ansible.builtin.set_fact:
-        psql_version: "{{ lookup('ansible.builtin.env', 'psqlversion', default='15.3') }}"
+        psql_version: "{{ lookup('ansible.builtin.env', 'psqlversion', default='15.4') }}"
     - name: Set major version variables accordingly
       ansible.builtin.set_fact:
         psql_version_major: "{{ psql_version | split('.') | first }}"
@@ -25,6 +25,12 @@
       ansible.builtin.stat:
         path: "/var/lib/pgsql/{{ psql_version_major }}/data/PG_VERSION"
       register: pgdata_dir_version
+      when: ansible_os_family == "RedHat"
+    - name: Check if PostgreSQL database is initialized
+      ansible.builtin.stat:
+        path: "/var/lib/pgsql/data/PG_VERSION"
+      register: pgdata_dir_version
+      when: ansible_os_family == "Suse"
     - name: Check postgresql DB was initialized
       ansible.builtin.assert:
         that: pgdata_dir_version.stat.exists
@@ -34,6 +40,11 @@
     - name: Check postgresql is running
       ansible.builtin.assert:
         that: services_state.ansible_facts.services['postgresql-' + psql_version_major + '.service'].state == 'running'
+      when: ansible_os_family == "RedHat"
+    - name: Check postgresql is running
+      ansible.builtin.assert:
+        that: services_state.ansible_facts.services['postgresql.service'].state == 'running'
+      when: ansible_os_family == "Suse"
     - name: Gather info about PostgreSQL users and databases
       become: true
       become_user: postgres
