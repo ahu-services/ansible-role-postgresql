@@ -45,11 +45,11 @@ jobs:
             version: "14.11"
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: "${{ github.repository }}"
       - name: molecule
-        uses: robertdebock/molecule-action@5.0.2
+        uses: robertdebock/molecule-action@6.0.1
         with:
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
