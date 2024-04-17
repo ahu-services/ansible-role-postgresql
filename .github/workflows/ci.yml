@@ -22,19 +22,27 @@ jobs:
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 9
-            version: "15.3"
+            version: "16.2"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 8
-            version: "15.3"
+            version: "16.2"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 9
-            version: "14.8"
+            version: "15.6"
           - image: docker-rockylinux-systemd
             namespace: eniocarboni
             tag: 8
-            version: "14.8"
+            version: "15.6"
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 9
+            version: "14.11"
+          - image: docker-rockylinux-systemd
+            namespace: eniocarboni
+            tag: 8
+            version: "14.11"
     steps:
       - name: checkout
         uses: actions/checkout@v3

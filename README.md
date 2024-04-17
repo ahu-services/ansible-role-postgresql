@@ -14,10 +14,12 @@ Following OS and PostgreSQL versions have been verified:
 
 |OS|OS Version|PostgreSQL Version|Status|
 |--|---------:|-----------------:|:------:|
-|Rocky Linux|8|14.8|:white_check_mark:|
-|Rocky Linux|9|14.8|:white_check_mark:|
+|Rocky Linux|8|14.11|:white_check_mark:|
+|Rocky Linux|9|14.11|:white_check_mark:|
 |Rocky Linux|8|15.3|:white_check_mark:|
 |Rocky Linux|9|15.3|:white_check_mark:|
+|Rocky Linux|8|16.2|:white_check_mark:|
+|Rocky Linux|9|16.2|:white_check_mark:|
 
 
 Dependencies
@@ -33,7 +35,7 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: database
       vars:
-        postgresql_version: 14.8
+        postgresql_version: 14.11
         postgresql_databases:
           - name: foobar # required; the rest are optional
             owner: barfoo
