@@ -56,3 +56,13 @@
       ansible.builtin.assert:
         that:
           - postgres_info.version.full == "{{ psql_version }}"
+    - name: Check content of the configuration file
+      ansible.builtin.slurp:
+        src: /var/lib/pgsql/{{ psql_version_major }}/data/postgresql.conf
+      register: pgsql_conf
+    - name: Assert file content
+      ansible.builtin.assert:
+        that:
+          - "\"listen_addresses = '*'\" in (pgsql_conf['content'] | b64decode)"
+        fail_msg: "'listen_addresses = '*' setting is missing in postgresql.conf"
+        success_msg: "'listen_addresses = '*' setting is present in postgresql.conf"

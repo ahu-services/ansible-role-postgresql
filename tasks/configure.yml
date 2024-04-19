@@ -9,3 +9,12 @@
   become: true
   notify: Restart postgresql
   when: postgresql_hba_entries | length > 0
+- name: Configure listener to any interface
+  become: true
+  become_user: postgres
+  ansible.builtin.lineinfile:
+    path: "{{ postgresql_config_path }}/postgresql.conf"
+    regexp: '^listen_addresses ='
+    insertbefore: '^#listen_addresses'
+    line: "listen_addresses = '*'"
+  notify: Restart postgresql
