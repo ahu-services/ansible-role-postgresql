@@ -18,6 +18,6 @@
       - {type: host, database: all, user: all, address: '::1/128', auth_method: "{{ postgresql_auth_method }}"}
       - {type: host, database: corpus, user: corpus, address: 0.0.0.0/0, auth_method: "{{ postgresql_auth_method }}"}
   tasks:
-    - name: Include ahu.postgresql
+    - name: Include ahu-services.postgresql
       ansible.builtin.include_role:
-        name: ahu.postgresql
+        name: ahu-services.postgresql

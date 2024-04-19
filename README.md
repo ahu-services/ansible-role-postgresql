@@ -52,7 +52,7 @@ Including an example of how to use your role (for instance, with variables passe
       tasks:
         - name: Setup PostgreSQL Server
           ansible.builtin.include_role:
-            name: "ahu.postgresql"
+            name: "ahu-services.postgresql"
 
 License
 -------
