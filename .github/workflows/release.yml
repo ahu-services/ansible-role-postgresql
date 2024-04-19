@@ -15,7 +15,7 @@ on: # yamllint disable-line rule:truthy
 
 defaults:
   run:
-    working-directory: 'ahu.postgresql'
+    working-directory: 'ahu_services.postgresql'
 
 jobs:
   release:
@@ -25,7 +25,7 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v2
         with:
-          path: 'ahu.postgresql'
+          path: 'ahu_services.postgresql'
 
       - name: Set up Python 3.
         uses: actions/setup-python@v2
