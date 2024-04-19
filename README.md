@@ -3,7 +3,7 @@ Ansible Role: PostgreSQL
 
 [![CI](https://github.com/ahu-services/ansible-role-postgresql/workflows/CI/badge.svg?event=push)](https://github.com/ahu-services/ansible-role-postgresql/actions?query=workflow%3ACI)
 
-Installs and configures PostgtreSQL Server 15 on RockyLinux servers.
+Installs and configures PostgtreSQL Server 14-16 on RockyLinux servers.
 
 Role Variables
 --------------
