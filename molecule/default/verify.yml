@@ -42,6 +42,7 @@
           - "databases"
           - "roles"
           - "version"
+          - "settings"
       register: postgres_info
     - name: Check database "corpus" exists
       ansible.builtin.assert:
@@ -56,6 +57,12 @@
       ansible.builtin.assert:
         that:
           - postgres_info.version.full == "{{ psql_version }}"
+    - name: Ensure pg_stat_statements is preloaded
+      ansible.builtin.assert:
+        that:
+          - "'pg_stat_statements' in (postgres_info.settings.shared_preload_libraries.setting | default(''))"
+        fail_msg: "pg_stat_statements missing from shared_preload_libraries"
+        success_msg: "pg_stat_statements present in shared_preload_libraries"
     - name: Check content of the configuration file
       ansible.builtin.slurp:
         src: /var/lib/pgsql/{{ psql_version_major }}/data/postgresql.conf
@@ -66,3 +73,16 @@
           - "\"listen_addresses = '*'\" in (pgsql_conf['content'] | b64decode)"
         fail_msg: "'listen_addresses = '*' setting is missing in postgresql.conf"
         success_msg: "'listen_addresses = '*' setting is present in postgresql.conf"
+    - name: Check pg_stat_statements extension exists in postgres database
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_query:
+        db: postgres
+        query: "SELECT extname FROM pg_extension WHERE extname = 'pg_stat_statements'"
+      register: pg_stat_statements_extension
+    - name: Assert pg_stat_statements extension exists
+      ansible.builtin.assert:
+        that:
+          - (pg_stat_statements_extension.query_result | length) == 1
+        fail_msg: "pg_stat_statements extension missing from postgres database"
+        success_msg: "pg_stat_statements extension present in postgres database"

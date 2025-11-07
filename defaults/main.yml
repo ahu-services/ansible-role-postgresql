@@ -12,6 +12,14 @@ postgresql_packages:
   - "{{ postgresql_python_library }}"
   - glibc-langpack-en
 
+postgresql_required_shared_preload_libraries:
+  - pg_stat_statements
+
+postgresql_extensions:
+  - name: pg_stat_statements
+    db: postgres
+    state: present
+
 
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
 postgresql_auth_method: "{{ ansible_fips | ternary('scram-sha-256', 'md5') }}"

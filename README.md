@@ -23,6 +23,18 @@ Following OS and PostgreSQL versions have been verified:
 |Rocky Linux|8|17.6|:white_check_mark:|
 |Rocky Linux|9|17.6|:white_check_mark:|
 
+By default the role preloads the `pg_stat_statements` extension and installs it in the `postgres` database. Adjust or extend this behavior with `postgresql_required_shared_preload_libraries` and `postgresql_extensions`:
+
+```
+postgresql_required_shared_preload_libraries:
+  - pg_stat_statements
+
+postgresql_extensions:
+  - name: pg_stat_statements
+    db: postgres
+    state: present
+```
+
 
 Dependencies
 ------------

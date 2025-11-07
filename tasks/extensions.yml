@@ -1,0 +1,50 @@
+---
+- name: Ensure required shared_preload_libraries are configured
+  when: postgresql_required_shared_preload_libraries | length > 0
+  become: true
+  become_user: "{{ postgresql_user }}"
+  block:
+    - name: Gather current shared_preload_libraries
+      community.postgresql.postgresql_info:
+        filter:
+          - settings
+      register: postgresql_preload_info
+
+    - name: Normalize shared_preload_libraries value
+      ansible.builtin.set_fact:
+        shared_preload_libraries_current: "{{ (postgresql_preload_info.settings.shared_preload_libraries.setting | default('')) | string }}"
+
+    - name: Compute merged shared_preload_libraries
+      ansible.builtin.set_fact:
+        shared_preload_libraries_current_list: "{{ shared_preload_libraries_current.split(',') | map('trim') | reject('equalto','') | list }}"
+        shared_preload_libraries_current_normalized: "{{ shared_preload_libraries_current_list | join(',') }}"
+        shared_preload_libraries_merged: >-
+          {{
+            (shared_preload_libraries_current_list +
+             (postgresql_required_shared_preload_libraries | map('trim') | list))
+            | reject('equalto','')
+            | list
+            | unique
+            | join(',')
+          }}
+
+    - name: Configure shared_preload_libraries via ALTER SYSTEM
+      community.postgresql.postgresql_alter_system:
+        param: shared_preload_libraries
+        value: "{{ shared_preload_libraries_merged }}"
+      when: shared_preload_libraries_current_normalized != shared_preload_libraries_merged
+      notify: Restart postgresql
+
+- name: Ensure requested PostgreSQL extensions are present
+  when: postgresql_extensions | length > 0
+  become: true
+  become_user: "{{ postgresql_user }}"
+  community.postgresql.postgresql_ext:
+    name: "{{ item.name }}"
+    db: "{{ item.db | default(item.database) }}"
+    state: "{{ item.state | default('present') }}"
+    schema: "{{ item.schema | default(omit) }}"
+    version: "{{ item.version | default(omit) }}"
+    cascade: "{{ item.cascade | default(omit) }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ postgresql_extensions }}"
