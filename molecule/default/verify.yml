@@ -6,7 +6,7 @@
   tasks:
     - name: Get desired version installed from environment
       ansible.builtin.set_fact:
-        psql_version: "{{ lookup('ansible.builtin.env', 'psqlversion', default='15.3') }}"
+        psql_version: "{{ lookup('ansible.builtin.env', 'psqlversion', default='17.6') }}"
     - name: Set major version variables accordingly
       ansible.builtin.set_fact:
         psql_version_major: "{{ psql_version | split('.') | first }}"

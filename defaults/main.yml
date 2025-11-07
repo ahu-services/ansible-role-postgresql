@@ -1,6 +1,6 @@
 ---
 # PostgreSQL Version and dependent paths
-postgresql_version: "15.3"
+postgresql_version: "17.6"
 postgresql_version_major: "{{ postgresql_version | split('.') | first }}"
 postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
 postgresql_bin_path: "/usr/pgsql-{{ postgresql_version_major }}/bin"
