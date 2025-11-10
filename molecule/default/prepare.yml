@@ -11,16 +11,33 @@
       ansible.builtin.user:
         name: asudo
         group: wheel
-    - name: Ensure shared Ansible tmp exists
+    - name: Ensure /tmp is sticky and world-writable for Ansible
       ansible.builtin.file:
-        path: /tmp/ansible-tmp
+        path: /tmp
         state: directory
         mode: "01777"
-    - name: Show tmp permissions for debugging
-      ansible.builtin.command: ls -ld /tmp /tmp/ansible-tmp
-      register: tmp_ls
+    - name: Verify we can create temp directories under /tmp
+      ansible.builtin.shell: |
+        set -euo pipefail
+        tmpdir="$(mktemp -d /tmp/ansible-check-XXXXXX)"
+        stat "$tmpdir"
+        rmdir "$tmpdir"
+      register: tmp_dir_check
       changed_when: false
-      failed_when: tmp_ls.rc != 0
+    - name: Capture /tmp diagnostics for debugging
+      ansible.builtin.shell: |
+        set -euo pipefail
+        echo "[ls -ld /tmp]"
+        ls -ld /tmp
+        echo "[df -h /tmp]"
+        df -h /tmp
+        echo "[mount | grep ' /tmp ']"
+        mount | grep ' /tmp ' || true
+      register: tmp_diag
+      changed_when: false
+    - name: Show /tmp diagnostics
+      ansible.builtin.debug:
+        msg: "{{ tmp_diag.stdout_lines }}"
     - name: Allow 'wheel' group to have passwordless sudo
       ansible.builtin.lineinfile:
         dest: /etc/sudoers
