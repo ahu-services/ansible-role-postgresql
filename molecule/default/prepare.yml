@@ -3,6 +3,8 @@
   hosts: all
   remote_user: root
   gather_facts: false
+  vars:
+    ansible_remote_tmp_path: /var/tmp/ansible-tmp
   tasks:
     - name: Install required packages
       ansible.builtin.dnf:
@@ -16,26 +18,35 @@
         path: /tmp
         state: directory
         mode: "01777"
-    - name: Verify we can create temp directories under /tmp
+    - name: Ensure remote tmp base exists
+      ansible.builtin.file:
+        path: "{{ ansible_remote_tmp_path }}"
+        state: directory
+        mode: "01777"
+    - name: Verify we can create temp directories under remote tmp
       ansible.builtin.shell: |
         set -euo pipefail
-        tmpdir="$(mktemp -d /tmp/ansible-check-XXXXXX)"
+        tmpdir="$(mktemp -d {{ ansible_remote_tmp_path }}/ansible-check-XXXXXX)"
         stat "$tmpdir"
         rmdir "$tmpdir"
       register: tmp_dir_check
       changed_when: false
-    - name: Capture /tmp diagnostics for debugging
+    - name: Capture tmp diagnostics for debugging
       ansible.builtin.shell: |
         set -euo pipefail
-        echo "[ls -ld /tmp]"
-        ls -ld /tmp
-        echo "[df -h /tmp]"
-        df -h /tmp
-        echo "[mount | grep ' /tmp ']"
+        for path in /tmp {{ ansible_remote_tmp_path }}; do
+          echo "[ls -ld $path]"
+          ls -ld "$path"
+        done
+        echo "[df -h /tmp /var/tmp]"
+        df -h /tmp /var/tmp
+        echo "[mount | grep ' /tmp ' || true]"
         mount | grep ' /tmp ' || true
+        echo "[mount | grep ' /var/tmp ' || true]"
+        mount | grep ' /var/tmp ' || true
       register: tmp_diag
       changed_when: false
-    - name: Show /tmp diagnostics
+    - name: Show tmp diagnostics
       ansible.builtin.debug:
         msg: "{{ tmp_diag.stdout_lines }}"
     - name: Allow 'wheel' group to have passwordless sudo
