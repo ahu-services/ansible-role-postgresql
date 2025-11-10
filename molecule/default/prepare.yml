@@ -4,6 +4,11 @@
   remote_user: root
   gather_facts: false
   tasks:
+    - name: Ensure root tmpdir exists
+      ansible.builtin.file:
+        path: /tmp/ansible-root
+        state: directory
+        mode: "01777"
     - name: Install required packages
       ansible.builtin.dnf:
         name: sudo
@@ -11,6 +16,13 @@
       ansible.builtin.user:
         name: asudo
         group: wheel
+    - name: Ensure asudo tmpdir exists
+      ansible.builtin.file:
+        path: /tmp/ansible-asudo
+        state: directory
+        owner: asudo
+        group: asudo
+        mode: "0755"
     - name: Allow 'wheel' group to have passwordless sudo
       ansible.builtin.lineinfile:
         dest: /etc/sudoers
