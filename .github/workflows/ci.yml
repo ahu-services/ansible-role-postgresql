@@ -21,37 +21,37 @@ jobs:
     strategy:
       matrix:
         config:
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "17.6"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "17.6"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "16.10"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "16.10"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "15.14"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "15.14"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "14.19"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
             version: "14.19"
     steps:
       - name: checkout
