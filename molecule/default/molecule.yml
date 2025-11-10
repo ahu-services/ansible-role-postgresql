@@ -7,16 +7,21 @@ platforms:
   - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}-${psqlversion:-17.6}"
     image: "${namespace:-eniocarboni}/${image:-docker-rockylinux-systemd}:${tag:-9}"
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /run
+      - /tmp
     cgroupns: host
     privileged: true
     pre_build_image: true
     command: /usr/sbin/init
+    environment:
+      container: docker
 provisioner:
   name: ansible
   config_options:
     defaults:
-      remote_tmp: /tmp/.ansible-${USER}
+      remote_tmp: /tmp
   inventory:
     group_vars:
       all:
