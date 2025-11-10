@@ -16,7 +16,7 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      remote_tmp: /tmp/.ansible/tmp
+      remote_tmp: /tmp/.ansible-${USER}/tmp
   inventory:
     group_vars:
       all:
