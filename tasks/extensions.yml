@@ -16,17 +16,12 @@
 
     - name: Compute merged shared_preload_libraries
       ansible.builtin.set_fact:
-        shared_preload_libraries_current_list: "{{ shared_preload_libraries_current.split(',') | map('trim') | reject('equalto', '') | list }}"
-        shared_preload_libraries_current_normalized: "{{ shared_preload_libraries_current_list | join(',') }}"
-        shared_preload_libraries_merged: >-
-          {{
-            (shared_preload_libraries_current_list +
-             (postgresql_required_shared_preload_libraries | map('trim') | list))
-            | reject('equalto', '')
-            | list
-            | unique
-            | join(',')
-          }}
+        shared_preload_libraries_current_list: "{{ current_list }}"
+        shared_preload_libraries_current_normalized: "{{ current_list | join(',') }}"
+        shared_preload_libraries_merged: "{{ (current_list + required_list) | reject('equalto', '') | list | unique | join(',') }}"
+      vars:
+        current_list: "{{ shared_preload_libraries_current.split(',') | map('trim') | reject('equalto', '') | list }}"
+        required_list: "{{ postgresql_required_shared_preload_libraries | map('trim') | reject('equalto', '') | list }}"
 
     - name: Configure shared_preload_libraries via ALTER SYSTEM
       community.postgresql.postgresql_alter_system:
