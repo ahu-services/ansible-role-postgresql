@@ -9,9 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: ansible-lint
-        uses: ansible-community/ansible-lint-action@main
+        uses: ansible-actions/ansible-lint-action@v1.1.0
   test:
     needs:
       - lint
@@ -53,11 +53,11 @@ jobs:
             version: "14.19"
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           path: "${{ github.repository }}"
       - name: molecule
-        uses: robertdebock/molecule-action@5.0.2
+        uses: robertdebock/molecule-action@6.0.1
         with:
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
