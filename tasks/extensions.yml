@@ -16,13 +16,13 @@
 
     - name: Compute merged shared_preload_libraries
       ansible.builtin.set_fact:
-        shared_preload_libraries_current_list: "{{ shared_preload_libraries_current.split(',') | map('trim') | reject('equalto','') | list }}"
+        shared_preload_libraries_current_list: "{{ shared_preload_libraries_current.split(',') | map('trim') | reject('equalto', '') | list }}"
         shared_preload_libraries_current_normalized: "{{ shared_preload_libraries_current_list | join(',') }}"
         shared_preload_libraries_merged: >-
           {{
             (shared_preload_libraries_current_list +
              (postgresql_required_shared_preload_libraries | map('trim') | list))
-            | reject('equalto','')
+            | reject('equalto', '')
             | list
             | unique
             | join(',')
