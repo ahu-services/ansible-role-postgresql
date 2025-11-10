@@ -7,14 +7,15 @@ platforms:
   - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}-${psqlversion:-17.6}"
     image: "${namespace:-geerlingguy}/${image:-docker-rockylinux9-ansible}:${tag:-latest}"
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     tmpfs:
-      - /run
-      - /tmp
+      - /run:rw,noexec,nosuid,size=64m
+      - /run/lock:rw,noexec,nosuid,size=16m
+      - /tmp:rw,noexec,nosuid,size=256m,mode=1777
     cgroupns: host
     privileged: true
     pre_build_image: true
-    command: /usr/lib/systemd/systemd
+    command: /usr/sbin/init
     environment:
       container: docker
 provisioner:
