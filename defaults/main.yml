@@ -26,6 +26,7 @@ postgresql_pgdg_gpg_keys_common:
 postgresql_pgdg_gpg_keys_arm:
   - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-AARCH64-RHEL
 postgresql_architecture: "{{ ansible_architecture | default(ansible_facts.architecture | default('')) }}"
+postgresql_distribution_major_version: "{{ ansible_facts.distribution_major_version | default(ansible_distribution_major_version | default('')) }}"
 postgresql_pgdg_gpg_keys: >-
   {{
     postgresql_pgdg_gpg_keys_common
@@ -38,6 +39,14 @@ postgresql_pgdg_repo_arch: >-
   {{
     (postgresql_architecture in ['aarch64', 'arm64'])
     | ternary('aarch64', 'x86_64')
+  }}
+postgresql_pgdg_repo_url: >-
+  {{
+    'https://download.postgresql.org/pub/repos/yum/reporpms/EL-'
+    ~ postgresql_distribution_major_version
+    ~ '-'
+    ~ postgresql_pgdg_repo_arch
+    ~ '/pgdg-redhat-repo-latest.noarch.rpm'
   }}
 
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
