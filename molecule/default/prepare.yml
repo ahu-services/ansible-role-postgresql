@@ -4,6 +4,29 @@
   remote_user: root
   gather_facts: false
   tasks:
+    - name: Ensure Molecule test container is running
+      delegate_to: localhost
+      block:
+        - name: Check container state
+          ansible.builtin.command:
+            argv:
+              - docker
+              - inspect
+              - "-f={{'{{.State.Running}}'}}"
+              - "{{ inventory_hostname }}"
+          register: molecule_container_state
+          changed_when: false
+        - name: Start container when stopped
+          ansible.builtin.command:
+            argv:
+              - docker
+              - start
+              - "{{ inventory_hostname }}"
+          when: molecule_container_state.stdout.strip() != "true"
+          changed_when: true
+    - name: Wait for container connection
+      ansible.builtin.wait_for_connection:
+        timeout: 60
     - name: Ensure shared tmp directories exist
       ansible.builtin.raw: |
         set -euo pipefail
