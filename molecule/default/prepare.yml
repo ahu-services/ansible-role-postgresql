@@ -52,3 +52,11 @@
         regexp: '^%wheel'
         line: '%wheel ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
+    - name: Allow asudo user to sudo without password
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/99-asudo
+        content: "asudo ALL=(ALL) NOPASSWD: ALL\n"
+        mode: '0440'
+        owner: root
+        group: root
+        validate: 'visudo -cf %s'
