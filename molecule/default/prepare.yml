@@ -36,7 +36,9 @@
 
     - name: Install required packages
       ansible.builtin.dnf:
-        name: sudo
+        name:
+          - sudo
+          - shadow-utils
 
     - name: Create sudo user for tests
       ansible.builtin.user:

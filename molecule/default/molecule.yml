@@ -4,7 +4,7 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}-${psqlversion:-17.6}"
+  - name: "postgres-${psqlversion:-17.6}-${image:-docker-rockylinux-systemd}-${tag:-9}"
     image: "${namespace:-geerlingguy}/${image:-docker-rockylinux9-ansible}:${tag:-latest}"
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
