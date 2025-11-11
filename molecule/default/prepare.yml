@@ -6,6 +6,32 @@
   vars:
     ansible_remote_tmp_path: /var/tmp/ansible-tmp
   tasks:
+    - name: Check Molecule container state
+      ansible.builtin.command:
+        argv:
+          - docker
+          - inspect
+          - "-f={{'{{.State.Running}}'}}"
+          - "{{ inventory_hostname }}"
+      register: molecule_container_state
+      changed_when: false
+      failed_when: molecule_container_state.rc != 0
+      delegate_to: localhost
+
+    - name: Start Molecule container if needed
+      ansible.builtin.command:
+        argv:
+          - docker
+          - start
+          - "{{ inventory_hostname }}"
+      when: molecule_container_state.stdout.strip() != "true"
+      changed_when: true
+      delegate_to: localhost
+
+    - name: Wait for container to become reachable
+      ansible.builtin.wait_for_connection:
+        timeout: 60
+
     - name: Bootstrap Ansible remote tmp via raw command
       ansible.builtin.raw: |
         set -euo pipefail
