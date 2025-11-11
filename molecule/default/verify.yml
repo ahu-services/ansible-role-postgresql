@@ -56,7 +56,7 @@
     - name: Check version for PostgreSQL
       ansible.builtin.assert:
         that:
-          - postgres_info.version.full == "{{ psql_version }}"
+          - postgres_info.version.full == psql_version
     - name: Ensure pg_stat_statements is preloaded
       ansible.builtin.assert:
         that:

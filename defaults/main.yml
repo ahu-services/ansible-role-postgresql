@@ -25,8 +25,20 @@ postgresql_pgdg_gpg_keys_common:
   - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
 postgresql_pgdg_gpg_keys_arm:
   - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-AARCH64-RHEL
-postgresql_pgdg_gpg_keys: "{{ postgresql_pgdg_gpg_keys_common + (((ansible_architecture | default(ansible_facts.architecture | default(''))) in ['aarch64', 'arm64']) | ternary(postgresql_pgdg_gpg_keys_arm, [])) }}"
-postgresql_pgdg_repo_arch: "{{ ((ansible_architecture | default(ansible_facts.architecture | default(''))) in ['aarch64', 'arm64']) | ternary('aarch64', 'x86_64') }}"
+postgresql_architecture: "{{ ansible_architecture | default(ansible_facts.architecture | default('')) }}"
+postgresql_pgdg_gpg_keys: >-
+  {{
+    postgresql_pgdg_gpg_keys_common
+    + (
+        (postgresql_architecture in ['aarch64', 'arm64'])
+        | ternary(postgresql_pgdg_gpg_keys_arm, [])
+      )
+  }}
+postgresql_pgdg_repo_arch: >-
+  {{
+    (postgresql_architecture in ['aarch64', 'arm64'])
+    | ternary('aarch64', 'x86_64')
+  }}
 
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
 postgresql_auth_method: "{{ ansible_fips | ternary('scram-sha-256', 'md5') }}"
