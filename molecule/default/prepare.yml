@@ -39,26 +39,6 @@
         install -d -m 01777 {{ ansible_remote_tmp_path }}
       changed_when: false
 
-    - name: Capture tmp diagnostics via raw
-      ansible.builtin.raw: |
-        set -euo pipefail
-        echo "[ls -ld /tmp]"
-        ls -ld /tmp
-        echo "[ls -ld {{ ansible_remote_tmp_path }}]"
-        ls -ld {{ ansible_remote_tmp_path }}
-        echo "[df -h /tmp /var/tmp]"
-        df -h /tmp /var/tmp
-        echo "[mount | grep ' /tmp ' || true]"
-        mount | grep ' /tmp ' || true
-        echo "[mount | grep ' /var/tmp ' || true]"
-        mount | grep ' /var/tmp ' || true
-      register: tmp_raw_diag
-      changed_when: false
-
-    - name: Show raw tmp diagnostics
-      ansible.builtin.debug:
-        msg: "{{ tmp_raw_diag.stdout_lines }}"
-
     - name: Install required packages
       ansible.builtin.dnf:
         name: sudo
@@ -76,32 +56,6 @@
         path: "{{ ansible_remote_tmp_path }}"
         state: directory
         mode: "01777"
-    - name: Verify we can create temp directories under remote tmp
-      ansible.builtin.shell: |
-        set -euo pipefail
-        tmpdir="$(mktemp -d {{ ansible_remote_tmp_path }}/ansible-check-XXXXXX)"
-        stat "$tmpdir"
-        rmdir "$tmpdir"
-      register: tmp_dir_check
-      changed_when: false
-    - name: Capture tmp diagnostics for debugging
-      ansible.builtin.shell: |
-        set -euo pipefail
-        for path in /tmp {{ ansible_remote_tmp_path }}; do
-          echo "[ls -ld $path]"
-          ls -ld "$path"
-        done
-        echo "[df -h /tmp /var/tmp]"
-        df -h /tmp /var/tmp
-        echo "[mount | grep ' /tmp ' || true]"
-        mount | grep ' /tmp ' || true
-        echo "[mount | grep ' /var/tmp ' || true]"
-        mount | grep ' /var/tmp ' || true
-      register: tmp_diag
-      changed_when: false
-    - name: Show tmp diagnostics
-      ansible.builtin.debug:
-        msg: "{{ tmp_diag.stdout_lines }}"
     - name: Allow 'wheel' group to have passwordless sudo
       ansible.builtin.lineinfile:
         dest: /etc/sudoers
