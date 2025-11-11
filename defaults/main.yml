@@ -9,6 +9,7 @@ postgresql_daemon: "postgresql-{{ postgresql_version_major }}"
 postgresql_python_library: python3-psycopg2
 postgresql_packages:
   - "postgresql{{ postgresql_version_major }}-server-{{ postgresql_version }}"
+  - "postgresql{{ postgresql_version_major }}-contrib"
   - "{{ postgresql_python_library }}"
   - glibc-langpack-en
 
