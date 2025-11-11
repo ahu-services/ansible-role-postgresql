@@ -3,59 +3,16 @@
   hosts: all
   remote_user: root
   gather_facts: false
-  vars:
-    ansible_remote_tmp_path: /var/tmp/ansible-tmp
   tasks:
-    - name: Check Molecule container state
-      ansible.builtin.command:
-        argv:
-          - docker
-          - inspect
-          - "-f={{'{{.State.Running}}'}}"
-          - "{{ inventory_hostname }}"
-      register: molecule_container_state
-      changed_when: false
-      failed_when: molecule_container_state.rc != 0
-      delegate_to: localhost
-
-    - name: Start Molecule container if needed
-      ansible.builtin.command:
-        argv:
-          - docker
-          - start
-          - "{{ inventory_hostname }}"
-      when: molecule_container_state.stdout.strip() != "true"
-      changed_when: true
-      delegate_to: localhost
-
-    - name: Wait for container to become reachable
-      ansible.builtin.wait_for_connection:
-        timeout: 60
-
-    - name: Bootstrap Ansible remote tmp via raw command
-      ansible.builtin.raw: |
-        set -euo pipefail
-        install -d -m 01777 /tmp
-        install -d -m 01777 {{ ansible_remote_tmp_path }}
-      changed_when: false
-
     - name: Install required packages
       ansible.builtin.dnf:
         name: sudo
-    - name: Create sudo user
+
+    - name: Create sudo user for tests
       ansible.builtin.user:
         name: asudo
         group: wheel
-    - name: Ensure /tmp is sticky and world-writable for Ansible
-      ansible.builtin.file:
-        path: /tmp
-        state: directory
-        mode: "01777"
-    - name: Ensure remote tmp base exists
-      ansible.builtin.file:
-        path: "{{ ansible_remote_tmp_path }}"
-        state: directory
-        mode: "01777"
+
     - name: Allow 'wheel' group to have passwordless sudo
       ansible.builtin.lineinfile:
         dest: /etc/sudoers
