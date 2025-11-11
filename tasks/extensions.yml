@@ -36,7 +36,7 @@
   become_user: "{{ postgresql_user }}"
   community.postgresql.postgresql_ext:
     name: "{{ item.name }}"
-    db: "{{ item.db | default(item.database) }}"
+    login_db: "{{ item.db | default(item.database) }}"
     state: "{{ item.state | default('present') }}"
     schema: "{{ item.schema | default(omit) }}"
     version: "{{ item.version | default(omit) }}"
