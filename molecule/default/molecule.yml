@@ -1,7 +1,6 @@
 ---
 dependency:
-  name: shell
-  command: bash -lc "cd ${MOLECULE_PROJECT_DIRECTORY:-.} && ansible-galaxy collection install -r molecule/requirements.yml"
+  name: galaxy
 driver:
   name: docker
 platforms:

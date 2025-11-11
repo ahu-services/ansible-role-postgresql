@@ -58,6 +58,9 @@ jobs:
         uses: actions/checkout@v5
         with:
           path: "${{ github.repository }}"
+      - name: Install Molecule requirements
+        run: ansible-galaxy collection install -r molecule/requirements.yml
+        working-directory: "${{ github.repository }}"
       - name: molecule
         uses: robertdebock/molecule-action@6.0.1
         with:
