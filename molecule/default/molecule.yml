@@ -27,5 +27,6 @@ provisioner:
     group_vars:
       all:
         postgresql_version: "${psqlversion:-17.6}"
+        ansible_become_password: asudo
 verifier:
   name: ansible

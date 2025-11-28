@@ -19,6 +19,10 @@
   changed_when:
     - '"Disabling module streams" in result.stdout'
 
+- name: Show debug pacakges
+  ansible.builtin.debug:
+    var: postgresql_packages
+
 - name: Install PostgreSQL Server
   ansible.builtin.dnf:
     name: "{{ postgresql_packages }}"

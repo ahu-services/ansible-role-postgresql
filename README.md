@@ -35,6 +35,9 @@ postgresql_extensions:
     state: present
 ```
 
+By default the role pins packages to the `postgresql_version` you set (e.g., `17.6`). To float to the latest patch for that major, set `postgresql_package_version` to an empty string.
+To pin to a specific release as well, adjust `postgresql_package_release` (defaults to `1PGDG.rhel{{ postgresql_distribution_major_version }}`), which builds a suffix like `-17.6-1PGDG.rhel9` for the RPM names.
+
 
 Dependencies
 ------------
