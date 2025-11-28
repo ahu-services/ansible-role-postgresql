@@ -61,3 +61,33 @@
         owner: root
         group: root
         validate: 'visudo -cf %s'
+
+    - name: Validate sudo setup (debugging, root context)
+      block:
+        - name: Inspect passwd entry for asudo
+          ansible.builtin.command: getent passwd asudo
+          register: postgresql_prepare_passwd
+          changed_when: false
+          failed_when: false
+        - name: Inspect shadow entry for asudo
+          ansible.builtin.command: getent shadow asudo
+          register: postgresql_prepare_shadow
+          changed_when: false
+          failed_when: false
+        - name: Inspect sudoers include for asudo
+          ansible.builtin.command: stat /etc/sudoers.d/99-asudo
+          register: postgresql_prepare_sudoers
+          changed_when: false
+          failed_when: false
+        - name: Check passwordless sudo via su - asudo
+          ansible.builtin.command: su - asudo -c "sudo -n true"
+          register: postgresql_prepare_sudo_check
+          changed_when: false
+          failed_when: false
+        - name: Show sudo diagnostics (prepare)
+          ansible.builtin.debug:
+            msg:
+              passwd: "{{ postgresql_prepare_passwd.stdout | default('') }}"
+              shadow: "{{ postgresql_prepare_shadow.stdout | default('') }}"
+              sudoers: "{{ postgresql_prepare_sudoers.stdout | default('') }}"
+              sudo_rc: "{{ postgresql_prepare_sudo_check.rc }}"
