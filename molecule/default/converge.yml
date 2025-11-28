@@ -21,6 +21,7 @@
     - name: Preflight sudo smoke test (debugging)
       ansible.builtin.command: sudo -n true
       changed_when: false
+      failed_when: false
 
     - name: Include ahu_services.postgresql
       ansible.builtin.include_role:
