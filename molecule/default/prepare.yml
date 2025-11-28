@@ -62,6 +62,20 @@
         group: root
         validate: 'visudo -cf %s'
 
+    - name: Override sudo PAM config to avoid sssd dependency in tests
+      ansible.builtin.copy:
+        dest: /etc/pam.d/sudo
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          #%PAM-1.0
+          auth       sufficient   pam_rootok.so
+          auth       sufficient   pam_unix.so try_first_pass
+          account    sufficient   pam_unix.so
+          session    required     pam_limits.so
+          session    required     pam_unix.so
+
     - name: Validate sudo setup (debugging, root context)
       block:
         - name: Inspect passwd entry for asudo
