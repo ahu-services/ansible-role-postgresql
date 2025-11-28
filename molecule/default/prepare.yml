@@ -76,6 +76,29 @@
           session    required     pam_limits.so
           session    required     pam_unix.so
 
+    - name: Ensure NSS prefers files (avoid sssd dependency)
+      ansible.builtin.copy:
+        dest: /etc/nsswitch.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          passwd:     files
+          shadow:     files
+          group:      files
+          sudoers:    files
+          hosts:      files dns
+          services:   files
+          networks:   files
+          protocols:  files
+          rpc:        files
+          ethers:     files
+          netmasks:   files
+          netgroup:   files
+          bootparams: files
+          automount:  files
+          aliases:    files
+
     - name: Validate sudo setup (debugging, root context)
       block:
         - name: Inspect passwd entry for asudo

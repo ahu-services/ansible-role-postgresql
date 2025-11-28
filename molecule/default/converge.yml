@@ -1,7 +1,7 @@
 ---
 - name: Converge
   hosts: all
-  remote_user: root
+  remote_user: asudo
   gather_facts: true
   vars:
     postgresql_databases:
@@ -18,6 +18,37 @@
       - {type: host, database: all, user: all, address: '::1/128', auth_method: "{{ postgresql_auth_method }}"}
       - {type: host, database: corpus, user: corpus, address: 0.0.0.0/0, auth_method: "{{ postgresql_auth_method }}"}
   tasks:
+    - name: Preflight sudo diagnostics (asudo)
+      block:
+        - name: Show current user
+          ansible.builtin.command: whoami
+          register: postgresql_converge_whoami
+          changed_when: false
+          failed_when: false
+        - name: Check passwordless sudo
+          ansible.builtin.command: sudo -n true
+          register: postgresql_converge_sudo_check
+          changed_when: false
+          failed_when: false
+        - name: List sudo permissions
+          ansible.builtin.command: sudo -l -n
+          register: postgresql_converge_sudo_list
+          changed_when: false
+          failed_when: false
+        - name: Show sudo version details
+          ansible.builtin.command: sudo -V
+          register: postgresql_converge_sudo_V
+          changed_when: false
+          failed_when: false
+        - name: Show sudo diagnostics (converge)
+          ansible.builtin.debug:
+            msg:
+              whoami: "{{ postgresql_converge_whoami.stdout }}"
+              sudo_rc: "{{ postgresql_converge_sudo_check.rc }}"
+              sudo_list_rc: "{{ postgresql_converge_sudo_list.rc }}"
+              sudo_list: "{{ postgresql_converge_sudo_list.stdout | default('') }}"
+              sudo_V: "{{ postgresql_converge_sudo_V.stdout | default('') }}"
+
     - name: Include ahu_services.postgresql
       ansible.builtin.include_role:
         name: ahu_services.postgresql
