@@ -19,7 +19,6 @@
       - {type: host, database: corpus, user: corpus, address: 0.0.0.0/0, auth_method: "{{ postgresql_auth_method }}"}
   tasks:
     - name: Preflight sudo smoke test (debugging)
-      when: postgresql_debug_sudo | default(false)
       ansible.builtin.command: sudo -n true
       changed_when: false
 

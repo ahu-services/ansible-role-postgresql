@@ -1,6 +1,5 @@
 ---
 - name: Validate sudo ability (debugging)
-  when: postgresql_debug_sudo | default(false)
   block:
     - name: Show current user
       ansible.builtin.command: whoami
