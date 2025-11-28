@@ -35,6 +35,11 @@
           register: postgresql_converge_sudo_list
           changed_when: false
           failed_when: false
+        - name: Show sudo version details
+          ansible.builtin.command: sudo -V
+          register: postgresql_converge_sudo_V
+          changed_when: false
+          failed_when: false
         - name: Show sudo diagnostics (converge)
           ansible.builtin.debug:
             msg:
@@ -42,6 +47,7 @@
               sudo_rc: "{{ postgresql_converge_sudo_check.rc }}"
               sudo_list_rc: "{{ postgresql_converge_sudo_list.rc }}"
               sudo_list: "{{ postgresql_converge_sudo_list.stdout | default('') }}"
+              sudo_V: "{{ postgresql_converge_sudo_V.stdout | default('') }}"
 
     - name: Include ahu_services.postgresql
       ansible.builtin.include_role:

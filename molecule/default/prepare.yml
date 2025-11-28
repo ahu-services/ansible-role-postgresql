@@ -91,3 +91,39 @@
               shadow: "{{ postgresql_prepare_shadow.stdout | default('') }}"
               sudoers: "{{ postgresql_prepare_sudoers.stdout | default('') }}"
               sudo_rc: "{{ postgresql_prepare_sudo_check.rc }}"
+
+    - name: Collect PAM/NSS diagnostics (root context)
+      block:
+        - name: Show sudo PAM config
+          ansible.builtin.command: cat /etc/pam.d/sudo
+          register: postgresql_prepare_pam_sudo
+          changed_when: false
+          failed_when: false
+        - name: Show system-auth PAM config
+          ansible.builtin.command: cat /etc/pam.d/system-auth
+          register: postgresql_prepare_pam_system_auth
+          changed_when: false
+          failed_when: false
+        - name: Show nsswitch
+          ansible.builtin.command: cat /etc/nsswitch.conf
+          register: postgresql_prepare_nsswitch
+          changed_when: false
+          failed_when: false
+        - name: Show sudo version details
+          ansible.builtin.command: sudo -V
+          register: postgresql_prepare_sudo_V
+          changed_when: false
+          failed_when: false
+        - name: Check for sssd process
+          ansible.builtin.command: pgrep -fl sssd
+          register: postgresql_prepare_sssd
+          changed_when: false
+          failed_when: false
+        - name: Show PAM/NSS diagnostics
+          ansible.builtin.debug:
+            msg:
+              pam_sudo: "{{ postgresql_prepare_pam_sudo.stdout | default('') }}"
+              pam_system_auth: "{{ postgresql_prepare_pam_system_auth.stdout | default('') }}"
+              nsswitch: "{{ postgresql_prepare_nsswitch.stdout | default('') }}"
+              sudo_V: "{{ postgresql_prepare_sudo_V.stdout | default('') }}"
+              sssd: "{{ postgresql_prepare_sssd.stdout | default('') }}"
