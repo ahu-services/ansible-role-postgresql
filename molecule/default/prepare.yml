@@ -24,6 +24,32 @@
               - "{{ inventory_hostname }}"
           when: molecule_container_state.stdout.strip() != "true"
           changed_when: true
+        - name: Verify container running after start
+          ansible.builtin.command:
+            argv:
+              - docker
+              - inspect
+              - "-f={{  '{{.State.Running}}' }}"
+              - "{{ inventory_hostname }}"
+          register: molecule_container_running
+          changed_when: false
+        - name: Gather container logs when not running
+          ansible.builtin.command:
+            argv:
+              - docker
+              - logs
+              - "{{ inventory_hostname }}"
+          register: molecule_container_logs
+          changed_when: false
+          failed_when: false
+          when: molecule_container_running.stdout.strip() != "true"
+        - name: Fail if container is not running
+          ansible.builtin.fail:
+            msg: >-
+              Molecule container {{ inventory_hostname }} is not running after start.
+              Logs:
+              {{ molecule_container_logs.stdout | default('') }}
+          when: molecule_container_running.stdout.strip() != "true"
     - name: Ensure shared tmp directories exist
       ansible.builtin.raw: |
         set -euo pipefail
