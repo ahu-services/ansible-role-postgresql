@@ -79,7 +79,7 @@
         line: '%wheel ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
 
-    - name: Override sudo PAM config for CI (avoid sssd/pam account issues)
+    - name: Override sudo PAM config for CI (avoid pam account issues)
       ansible.builtin.copy:
         dest: /etc/pam.d/sudo
         owner: root
@@ -87,10 +87,9 @@
         mode: '0644'
         content: |
           #%PAM-1.0
-          auth       sufficient   pam_unix.so try_first_pass nullok
-          account    sufficient   pam_unix.so
-          session    required     pam_limits.so
-          session    required     pam_unix.so
+          auth       sufficient   pam_permit.so
+          account    sufficient   pam_permit.so
+          session    sufficient   pam_permit.so
       when: lookup('env', 'GITHUB_ACTIONS') | default(false) | bool
 
     - name: Ensure NSS prefers files for sudo in CI
