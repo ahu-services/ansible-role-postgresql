@@ -61,6 +61,14 @@
         owner: root
         group: root
         validate: 'visudo -cf %s'
+    - name: Disable sudo PAM for test container (CI only)
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/00-nopam
+        content: "Defaults !pam\n"
+        mode: '0440'
+        owner: root
+        group: root
+        validate: 'visudo -cf %s'
 
     - name: Override sudo PAM config to avoid sssd dependency in tests
       ansible.builtin.copy:
