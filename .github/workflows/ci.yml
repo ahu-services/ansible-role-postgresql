@@ -1,57 +1,88 @@
 ---
 name: CI
 on: # yamllint disable-line rule:truthy
-  - pull_request
-  - push
+  pull_request:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
 
 jobs:
   lint:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: ansible-lint
-        uses: ansible-community/ansible-lint-action@main
+        uses: ansible-actions/ansible-lint-action@v1.1.0
+        with:
+          target: .
   test:
     needs:
       - lint
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         config:
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
-            version: "16.2"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
-            version: "16.2"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
-            version: "15.6"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
-            version: "15.6"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 9
-            version: "14.11"
-          - image: docker-rockylinux-systemd
-            namespace: eniocarboni
-            tag: 8
-            version: "14.11"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "17.6"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "17.6"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "16.10"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "16.10"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "15.14"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "15.14"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "14.19"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "14.19"
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
         with:
           path: "${{ github.repository }}"
-      - name: molecule
-        uses: robertdebock/molecule-action@5.0.2
-        with:
+      - name: Molecule
+        uses: gofrolist/molecule-action@v2.7.80
+        env:
+          DOCKER_HOST: unix:///var/run/docker.sock
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
           namespace: ${{ matrix.config.namespace }}
           psqlversion: ${{ matrix.config.version }}
+
+  galaxy:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Install ansible-core
+        run: pipx install ansible-core
+      - name: Import role to Ansible Galaxy
+        env:
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+        run: ansible-galaxy role import --api-key "$GALAXY_API_KEY" ahu-services ansible-role-postgresql
