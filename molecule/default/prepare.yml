@@ -70,7 +70,6 @@
       ansible.builtin.user:
         name: asudo
         group: wheel
-        password: "{{ 'asudo' | password_hash('sha512') }}"
 
     - name: Allow 'wheel' group to have passwordless sudo
       ansible.builtin.lineinfile:
