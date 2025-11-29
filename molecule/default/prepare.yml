@@ -50,17 +50,16 @@
               Logs:
               {{ molecule_container_logs.stdout | default('') }}
           when: molecule_container_running.stdout.strip() != "true"
+
+    - name: Wait for container connection
+      ansible.builtin.wait_for_connection:
+        timeout: 60
     - name: Ensure shared tmp directories exist
       ansible.builtin.raw: |
         set -euo pipefail
         install -d -m 01777 /tmp
         install -d -m 01777 /var/tmp/ansible-tmp
       changed_when: false
-
-    - name: Wait for container connection
-      ansible.builtin.wait_for_connection:
-        timeout: 60
-
     - name: Install required packages
       ansible.builtin.dnf:
         name:
