@@ -17,6 +17,7 @@ jobs:
       - lint
     runs-on: ubuntu-20.04
     strategy:
+      max-parallel: 1
       matrix:
         config:
           - image: docker-rockylinux-systemd
