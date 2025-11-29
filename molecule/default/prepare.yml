@@ -4,13 +4,6 @@
   remote_user: root
   gather_facts: false
   tasks:
-    - name: Ensure shared tmp directories exist
-      ansible.builtin.raw: |
-        set -euo pipefail
-        install -d -m 01777 /tmp
-        install -d -m 01777 /var/tmp/ansible-tmp
-      changed_when: false
-
     - name: Ensure Molecule test container is running
       delegate_to: localhost
       block:
@@ -31,6 +24,13 @@
               - "{{ inventory_hostname }}"
           when: molecule_container_state.stdout.strip() != "true"
           changed_when: true
+    - name: Ensure shared tmp directories exist
+      ansible.builtin.raw: |
+        set -euo pipefail
+        install -d -m 01777 /tmp
+        install -d -m 01777 /var/tmp/ansible-tmp
+      changed_when: false
+
     - name: Wait for container connection
       ansible.builtin.wait_for_connection:
         timeout: 60
