@@ -18,6 +18,9 @@
     enabled: true
   become: true
 
+- name: Ensure PostgreSQL extensions are configured
+  ansible.builtin.import_tasks: extensions.yml
+
 # Configure PostgreSQL.
 - name: Add Database Users
   ansible.builtin.import_tasks: users.yml

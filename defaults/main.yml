@@ -1,17 +1,65 @@
 ---
 # PostgreSQL Version and dependent paths
-postgresql_version: "15.3"
+postgresql_version: "17.6"
 postgresql_version_major: "{{ postgresql_version | split('.') | first }}"
+postgresql_package_version: "{{ postgresql_version }}"
+postgresql_package_release: "1PGDG.rhel{{ postgresql_distribution_major_version | default('9') }}"
+postgresql_package_version_suffix: >-
+  {{
+    postgresql_package_version
+    | ternary(
+        '-' ~ postgresql_package_version ~ (
+          postgresql_package_release | ternary('-' ~ postgresql_package_release, '')
+        ),
+        ''
+      )
+  }}
 postgresql_data_dir: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
 postgresql_bin_path: "/usr/pgsql-{{ postgresql_version_major }}/bin"
 postgresql_config_path: "/var/lib/pgsql/{{ postgresql_version_major }}/data"
 postgresql_daemon: "postgresql-{{ postgresql_version_major }}"
 postgresql_python_library: python3-psycopg2
 postgresql_packages:
-  - "postgresql{{ postgresql_version_major }}-server-{{ postgresql_version }}"
+  - "postgresql{{ postgresql_version_major }}-server{{ postgresql_package_version_suffix }}"
+  - "postgresql{{ postgresql_version_major }}-contrib{{ postgresql_package_version_suffix }}"
   - "{{ postgresql_python_library }}"
   - glibc-langpack-en
 
+postgresql_required_shared_preload_libraries:
+  - pg_stat_statements
+
+postgresql_extensions:
+  - name: pg_stat_statements
+    db: postgres
+    state: present
+
+postgresql_pgdg_gpg_keys_common:
+  - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL
+postgresql_pgdg_gpg_keys_arm:
+  - https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-AARCH64-RHEL
+postgresql_architecture: "{{ ansible_architecture | default(ansible_facts.architecture | default('')) }}"
+postgresql_distribution_major_version: "{{ ansible_facts.distribution_major_version | default(ansible_distribution_major_version | default('')) }}"
+postgresql_pgdg_gpg_keys: >-
+  {{
+    postgresql_pgdg_gpg_keys_common
+    + (
+        (postgresql_architecture in ['aarch64', 'arm64'])
+        | ternary(postgresql_pgdg_gpg_keys_arm, [])
+      )
+  }}
+postgresql_pgdg_repo_arch: >-
+  {{
+    (postgresql_architecture in ['aarch64', 'arm64'])
+    | ternary('aarch64', 'x86_64')
+  }}
+postgresql_pgdg_repo_url: >-
+  {{
+    'https://download.postgresql.org/pub/repos/yum/reporpms/EL-'
+    ~ postgresql_distribution_major_version
+    ~ '-'
+    ~ postgresql_pgdg_repo_arch
+    ~ '/pgdg-redhat-repo-latest.noarch.rpm'
+  }}
 
 # `md5` or `scram-sha-256` (https://www.postgresql.org/docs/10/auth-methods.html)
 postgresql_auth_method: "{{ ansible_fips | ternary('scram-sha-256', 'md5') }}"
