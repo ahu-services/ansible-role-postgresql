@@ -65,7 +65,6 @@ jobs:
         with:
           molecule_args: "test -s default"
           molecule_options: ""
-          molecule_workdir: "${{ github.repository }}"
         env:
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
