@@ -63,7 +63,7 @@ jobs:
       - name: Molecule
         uses: gofrolist/molecule-action@v2.7.80
         with:
-          molecule_args: "test -s default"
+          molecule_args: "-s default"
           molecule_options: ""
         env:
           image: ${{ matrix.config.image }}
