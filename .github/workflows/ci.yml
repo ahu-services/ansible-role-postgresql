@@ -5,6 +5,9 @@ on: # yamllint disable-line rule:truthy
   push:
     branches:
       - main
+  release:
+    types:
+      - published
 
 jobs:
   lint:
@@ -27,34 +30,34 @@ jobs:
             namespace: geerlingguy
             tag: latest
             version: "17.6"
-          # - image: docker-rockylinux8-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "17.6"
-          # - image: docker-rockylinux9-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "16.10"
-          # - image: docker-rockylinux8-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "16.10"
-          # - image: docker-rockylinux9-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "15.14"
-          # - image: docker-rockylinux8-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "15.14"
-          # - image: docker-rockylinux9-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "14.19"
-          # - image: docker-rockylinux8-ansible
-          #   namespace: geerlingguy
-          #   tag: latest
-          #   version: "14.19"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "17.6"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "16.10"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "16.10"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "15.14"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "15.14"
+          - image: docker-rockylinux9-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "14.19"
+          - image: docker-rockylinux8-ansible
+            namespace: geerlingguy
+            tag: latest
+            version: "14.19"
     steps:
       - name: checkout
         uses: actions/checkout@v5
@@ -68,3 +71,18 @@ jobs:
           tag: ${{ matrix.config.tag }}
           namespace: ${{ matrix.config.namespace }}
           psqlversion: ${{ matrix.config.version }}
+
+  galaxy:
+    if: github.event_name == 'release' && github.event.action == 'published'
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v5
+      - name: Install ansible-core
+        run: pipx install ansible-core
+      - name: Import role to Ansible Galaxy
+        env:
+          GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+        run: ansible-galaxy role import --api-key "$GALAXY_API_KEY" ahu-services ansible-role-postgresql
