@@ -78,3 +78,41 @@
         regexp: '^%wheel'
         line: '%wheel ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
+
+    - name: Override sudo PAM config for CI (avoid sssd/pam account issues)
+      ansible.builtin.copy:
+        dest: /etc/pam.d/sudo
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          #%PAM-1.0
+          auth       sufficient   pam_unix.so try_first_pass nullok
+          account    sufficient   pam_unix.so
+          session    required     pam_limits.so
+          session    required     pam_unix.so
+      when: lookup('env', 'GITHUB_ACTIONS') | default(false) | bool
+
+    - name: Ensure NSS prefers files for sudo in CI
+      ansible.builtin.copy:
+        dest: /etc/nsswitch.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          passwd:     files
+          shadow:     files
+          group:      files
+          sudoers:    files
+          hosts:      files dns
+          services:   files
+          networks:   files
+          protocols:  files
+          rpc:        files
+          ethers:     files
+          netmasks:   files
+          netgroup:   files
+          bootparams: files
+          automount:  files
+          aliases:    files
+      when: lookup('env', 'GITHUB_ACTIONS') | default(false) | bool
