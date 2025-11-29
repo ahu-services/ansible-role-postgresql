@@ -4,13 +4,73 @@
   remote_user: root
   gather_facts: false
   tasks:
+    - name: Ensure Molecule test container is running
+      delegate_to: localhost
+      block:
+        - name: Check container state
+          ansible.builtin.command:
+            argv:
+              - docker
+              - inspect
+              - "-f={{  '{{.State.Running}}' }}"
+              - "{{ inventory_hostname }}"
+          register: molecule_container_state
+          changed_when: false
+        - name: Start container when stopped
+          ansible.builtin.command:
+            argv:
+              - docker
+              - start
+              - "{{ inventory_hostname }}"
+          when: molecule_container_state.stdout.strip() != "true"
+          changed_when: true
+        - name: Verify container running after start
+          ansible.builtin.command:
+            argv:
+              - docker
+              - inspect
+              - "-f={{  '{{.State.Running}}' }}"
+              - "{{ inventory_hostname }}"
+          register: molecule_container_running
+          changed_when: false
+        - name: Gather container logs when not running
+          ansible.builtin.command:
+            argv:
+              - docker
+              - logs
+              - "{{ inventory_hostname }}"
+          register: molecule_container_logs
+          changed_when: false
+          failed_when: false
+          when: molecule_container_running.stdout.strip() != "true"
+        - name: Fail if container is not running
+          ansible.builtin.fail:
+            msg: >-
+              Molecule container {{ inventory_hostname }} is not running after start.
+              Logs:
+              {{ molecule_container_logs.stdout | default('') }}
+          when: molecule_container_running.stdout.strip() != "true"
+
+    - name: Wait for container connection
+      ansible.builtin.wait_for_connection:
+        timeout: 60
+    - name: Ensure shared tmp directories exist
+      ansible.builtin.raw: |
+        set -euo pipefail
+        install -d -m 01777 /tmp
+        install -d -m 01777 /var/tmp/ansible-tmp
+      changed_when: false
     - name: Install required packages
       ansible.builtin.dnf:
-        name: sudo
-    - name: Create sudo user
+        name:
+          - sudo
+          - shadow-utils
+
+    - name: Create sudo user for tests
       ansible.builtin.user:
         name: asudo
         group: wheel
+
     - name: Allow 'wheel' group to have passwordless sudo
       ansible.builtin.lineinfile:
         dest: /etc/sudoers
@@ -18,3 +78,40 @@
         regexp: '^%wheel'
         line: '%wheel ALL=(ALL) NOPASSWD: ALL'
         validate: 'visudo -cf %s'
+
+    - name: Override sudo PAM config for CI (avoid pam account issues)
+      ansible.builtin.copy:
+        dest: /etc/pam.d/sudo
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          #%PAM-1.0
+          auth       sufficient   pam_permit.so
+          account    sufficient   pam_permit.so
+          session    sufficient   pam_permit.so
+      when: lookup('env', 'GITHUB_ACTIONS') | default(false) | bool
+
+    - name: Ensure NSS prefers files for sudo in CI
+      ansible.builtin.copy:
+        dest: /etc/nsswitch.conf
+        owner: root
+        group: root
+        mode: '0644'
+        content: |
+          passwd:     files
+          shadow:     files
+          group:      files
+          sudoers:    files
+          hosts:      files dns
+          services:   files
+          networks:   files
+          protocols:  files
+          rpc:        files
+          ethers:     files
+          netmasks:   files
+          netgroup:   files
+          bootparams: files
+          automount:  files
+          aliases:    files
+      when: lookup('env', 'GITHUB_ACTIONS') | default(false) | bool
