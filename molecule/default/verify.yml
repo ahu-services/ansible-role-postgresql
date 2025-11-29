@@ -77,7 +77,7 @@
       become: true
       become_user: postgres
       community.postgresql.postgresql_query:
-        db: postgres
+        login_db: postgres
         query: "SELECT extname FROM pg_extension WHERE extname = 'pg_stat_statements'"
       register: pg_stat_statements_extension
     - name: Assert pg_stat_statements extension exists
