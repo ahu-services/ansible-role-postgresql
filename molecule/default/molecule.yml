@@ -4,19 +4,29 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: "postgres-${image:-docker-rockylinux-systemd}-${tag:-9}-${psqlversion:-15.3}"
-    image: "${namespace:-eniocarboni}/${image:-docker-rockylinux-systemd}:${tag:-9}"
+  - name: "postgres-${psqlversion:-17.6}-${image:-docker-rockylinux-systemd}-${tag:-9}"
+    image: "${namespace:-geerlingguy}/${image:-docker-rockylinux9-ansible}:${tag:-latest}"
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-    cgroupns: host
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    tmpfs:
+      - /run:rw,nosuid,size=64m
+      - /run/lock:rw,nosuid,size=16m
+      - /tmp:rw,nosuid,size=256m,mode=1777
+    cgroupns_mode: host
     privileged: true
     pre_build_image: true
-    command: /usr/sbin/init
+    command: /sbin/init
+    environment:
+      container: docker
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      remote_tmp: /var/tmp/ansible-tmp
   inventory:
     group_vars:
       all:
-        postgresql_version: "${psqlversion:-15.3}"
+        postgresql_version: "${psqlversion:-17.6}"
+        ansible_become_password: asudo
 verifier:
   name: ansible
