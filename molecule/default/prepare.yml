@@ -71,8 +71,8 @@
         content: |
           #%PAM-1.0
           auth       sufficient   pam_rootok.so
-          auth       sufficient   pam_unix.so try_first_pass
-          account    sufficient   pam_unix.so
+          auth       sufficient   pam_unix.so try_first_pass debug
+          account    sufficient   pam_unix.so debug
           session    required     pam_limits.so
           session    required     pam_unix.so
 
@@ -156,6 +156,31 @@
           register: postgresql_prepare_sssd
           changed_when: false
           failed_when: false
+        - name: Show sudoers base file
+          ansible.builtin.command: cat /etc/sudoers
+          register: postgresql_prepare_sudoers_base
+          changed_when: false
+          failed_when: false
+        - name: List sudoers.d entries
+          ansible.builtin.command: ls -l /etc/sudoers.d
+          register: postgresql_prepare_sudoers_d_ls
+          changed_when: false
+          failed_when: false
+        - name: Show sudoers drop-in for asudo
+          ansible.builtin.command: cat /etc/sudoers.d/99-asudo
+          register: postgresql_prepare_sudoers_dropin
+          changed_when: false
+          failed_when: false
+        - name: Tail PAM/secure logs
+          ansible.builtin.command: tail -n 200 /var/log/secure
+          register: postgresql_prepare_secure_log
+          changed_when: false
+          failed_when: false
+        - name: Tail auth.log (if present)
+          ansible.builtin.command: tail -n 200 /var/log/auth.log
+          register: postgresql_prepare_auth_log
+          changed_when: false
+          failed_when: false
         - name: Show PAM/NSS diagnostics
           ansible.builtin.debug:
             msg:
@@ -164,3 +189,8 @@
               nsswitch: "{{ postgresql_prepare_nsswitch.stdout | default('') }}"
               sudo_V: "{{ postgresql_prepare_sudo_V.stdout | default('') }}"
               sssd: "{{ postgresql_prepare_sssd.stdout | default('') }}"
+              sudoers_base: "{{ postgresql_prepare_sudoers_base.stdout | default('') }}"
+              sudoers_d_ls: "{{ postgresql_prepare_sudoers_d_ls.stdout | default('') }}"
+              sudoers_dropin: "{{ postgresql_prepare_sudoers_dropin.stdout | default('') }}"
+              secure_log: "{{ postgresql_prepare_secure_log.stdout | default('') }}"
+              auth_log: "{{ postgresql_prepare_auth_log.stdout | default('') }}"
