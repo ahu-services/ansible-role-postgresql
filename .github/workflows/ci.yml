@@ -63,6 +63,7 @@ jobs:
       - name: Molecule
         uses: gofrolist/molecule-action@v2.7.80
         env:
+          DOCKER_HOST: unix:///var/run/docker.sock
           image: ${{ matrix.config.image }}
           tag: ${{ matrix.config.tag }}
           namespace: ${{ matrix.config.namespace }}
