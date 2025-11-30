@@ -24,6 +24,7 @@ jobs:
       - lint
     runs-on: ubuntu-latest
     strategy:
+      max-parallel: 1
       matrix:
         config:
           - image: docker-rockylinux9-ansible
